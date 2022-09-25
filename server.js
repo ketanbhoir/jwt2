@@ -3,6 +3,7 @@ const path = require('path');
 const bodyparser = require('body-parser');
 const User = require('./model/user');
 const { default: mongoose } = require('mongoose');
+const bcrypt = require('bcrypt');
 
 mongoose.connect('mongodb://localhost:27017/login-jwt-app-db', {
   useNewUrlParser: true,
@@ -14,6 +15,11 @@ app.use(bodyparser.json());
 
 app.post('/api/register', async (req, res) => {
   console.log(req.body);
+  // get UN & pass
+  const { username, password: plainTextPassword } = req.body;
+  //   hash them
+  const password = await bcrypt.hash(password, 10);
+  //   const password = await bcrypt.hash(password, 10);
   res.json({ status: 'ok' });
 });
 
