@@ -17,6 +17,20 @@ app.post('/api/register', async (req, res) => {
   //   console.log(req.body);
   // get UN & pass
   const { username, password: plainTextPassword } = req.body;
+
+  if (!username || typeof username !== 'string') {
+    return res.json({ status: 'error', error: 'Invalid username' });
+  }
+  if (!plainTextPassword || typeof plainTextPassword !== 'string') {
+    return res.json({ status: 'error', error: 'Invalid password' });
+  }
+
+  if (plainTextPassword.length < 5) {
+    return res.json({
+      status: 'error',
+      error: 'password too small. shud be atleast 6 char ',
+    });
+  }
   //   hash them
   const password = await bcrypt.hash(plainTextPassword, 10);
 
@@ -28,8 +42,10 @@ app.post('/api/register', async (req, res) => {
     });
     console.log('user created successfully:', response);
   } catch (error) {
-    console.log(error);
-    return res.json({ status: 'error' });
+    if (error.code === 11000) {
+      return res.json({ status: 'error', error: 'username already exist' });
+    }
+    throw error;
   }
   //   const password = await bcrypt.hash(password, 10);
   res.json({ status: 'ok' });
