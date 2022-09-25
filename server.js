@@ -14,11 +14,23 @@ app.use('/', express.static(path.join(__dirname, 'static')));
 app.use(bodyparser.json());
 
 app.post('/api/register', async (req, res) => {
-  console.log(req.body);
+  //   console.log(req.body);
   // get UN & pass
   const { username, password: plainTextPassword } = req.body;
   //   hash them
-  const password = await bcrypt.hash(password, 10);
+  const password = await bcrypt.hash(plainTextPassword, 10);
+
+  //   to create auser
+  try {
+    const response = await User.create({
+      username,
+      password,
+    });
+    console.log('user created successfully:', response);
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: 'error' });
+  }
   //   const password = await bcrypt.hash(password, 10);
   res.json({ status: 'ok' });
 });
